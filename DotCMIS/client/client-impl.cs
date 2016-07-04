@@ -763,7 +763,8 @@ namespace DotCMIS.Client.Impl
         {
             lock (sessionLock)
             {
-                IObjectList objectList = Binding.GetDiscoveryService().GetContentChanges(RepositoryId, ref changeLogToken, includeProperties,
+                string ignored = null;
+                IObjectList objectList = Binding.GetDiscoveryService().GetContentChanges(RepositoryId, ref changeLogToken, ref ignored, includeProperties,
                     context.FilterString, context.IncludePolicies, context.IncludeAcls, maxNumItems, null);
 
                 return ObjectFactory.ConvertChangeEvents(changeLogToken, objectList);

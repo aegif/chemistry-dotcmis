@@ -1397,6 +1397,13 @@ namespace DotCMIS.Binding.Browser
             return BrowserConverter.ConvertObjectList(json, typeCache, true);
         }
 
+        public IObjectList GetContentChanges(string repositoryId, ref string changeLogToken, ref string nextLink, bool? includeProperties,
+           string filter, bool? includePolicyIds, bool? includeAcl, long? maxItems, IExtensionsData extension)
+        {
+            return GetContentChanges(repositoryId, ref changeLogToken, includeProperties,
+                filter, includePolicyIds, includeAcl, maxItems, extension);
+        }
+
         public IObjectList GetContentChanges(string repositoryId, ref string changeLogToken, bool? includeProperties,
            string filter, bool? includePolicyIds, bool? includeAcl, long? maxItems, IExtensionsData extension)
         {

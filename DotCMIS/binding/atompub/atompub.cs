@@ -2712,7 +2712,7 @@ namespace DotCMIS.Binding.AtomPub
             return result;
         }
 
-        public IObjectList GetContentChanges(string repositoryId, ref string changeLogToken, bool? includeProperties,
+        public IObjectList GetContentChanges(string repositoryId, ref string changeLogToken, ref string nextLink, bool? includeProperties,
            string filter, bool? includePolicyIds, bool? includeAcl, long? maxItems, IExtensionsData extension)
         {
             ObjectList result = new ObjectList();
@@ -2736,8 +2736,10 @@ namespace DotCMIS.Binding.AtomPub
             // read and parse
             HttpUtils.Response resp = Read(url);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
+            String lastChangeLogToken = null;
 
             // handle top level
+            string localNextLink = null;
             foreach (AtomElement element in feed.GetElements())
             {
                 if (element.Object is AtomLink)
@@ -2745,16 +2747,21 @@ namespace DotCMIS.Binding.AtomPub
                     if (IsNextLink(element))
                     {
                         result.HasMoreItems = true;
-                        string token = new UrlParser(((AtomLink)element.Object).Href).GetQueryValue(Parameters.ParamChangeLogToken);
+                        /*string token = new UrlParser(((AtomLink)element.Object).Href).GetQueryValue(Parameters.ParamChangeLogToken);
                         if (token != null)
                         {
                             changeLogToken = token;
-                        }
+                        }*/
+                        localNextLink = ((AtomLink)element.Object).Href;
                     }
                 }
                 else if (IsInt(NameNumItems, element))
                 {
                     result.NumItems = (long)element.Object;
+                }
+                else if (IsStr("changeLogToken", element))
+                {
+                    lastChangeLogToken = (string)element.Object;
                 }
             }
 
@@ -2782,7 +2789,37 @@ namespace DotCMIS.Binding.AtomPub
                 }
             }
 
+            if (changeLogToken != null)
+            {
+                // the AtomPub binding cannot return a new change log token,
+                // but an OpenCMIS server uses a proprietary tag
+                changeLogToken = lastChangeLogToken;
+
+                // but we can provide the link to the next Atom feed
+                if (/*changeLogToken is ExtendedHolder &&*/ nextLink != null)
+                {
+                    //(/*(ExtendedHolder<String>)*/ changeLogToken).setExtraValue(Constants.REP_REL_CHANGES, nextLink);
+
+                    nextLink = localNextLink;
+                }
+            }
+
             return result;
+        }
+    }
+
+    internal class ExtentedHolder
+    {
+        private Dictionary<String, Object> extraValues = new Dictionary<String, Object>();
+
+        public void setExtraValue(String name, Object value)
+        {
+            extraValues[name] = value;
+        }
+
+        public String getExtraValue(String name)
+        {
+            return (String)extraValues[name];
         }
     }
 

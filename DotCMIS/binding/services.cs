@@ -155,7 +155,7 @@ namespace DotCMIS.Binding.Services
            bool? includeAllowableActions, IncludeRelationshipsFlag? includeRelationships, string renditionFilter,
            long? maxItems, long? skipCount, IExtensionsData extension);
 
-        IObjectList GetContentChanges(string repositoryId, ref string changeLogToken, bool? includeProperties,
+        IObjectList GetContentChanges(string repositoryId, ref string changeLogToken, ref string nextLink, bool? includeProperties,
            string filter, bool? includePolicyIds, bool? includeAcl, long? maxItems, IExtensionsData extension);
     }
 
