@@ -466,7 +466,10 @@ namespace DotCMIS.Client.Impl
             return result;
         }
 
-        public IChangeEvents ConvertChangeEvents(string changeLogToken, IObjectList objectList)
+        /**
+         * Equivalent of the anonymous AbstractPageFetcher implementation inside OpenCMIS opencmis/client/runtime/SessionImpl.java getContentChanges
+         */
+        public IChangeEvents ConvertChangeEvents(string changeLogToken, ref string nextLink, IObjectList objectList)
         {
             if (objectList == null)
             {

@@ -763,11 +763,11 @@ namespace DotCMIS.Client.Impl
         {
             lock (sessionLock)
             {
-                string ignored = null;
-                IObjectList objectList = Binding.GetDiscoveryService().GetContentChanges(RepositoryId, ref changeLogToken, ref ignored, includeProperties,
+                string nextLink = null;
+                IObjectList objectList = Binding.GetDiscoveryService().GetContentChanges(RepositoryId, ref changeLogToken, ref nextLink, includeProperties,
                     context.FilterString, context.IncludePolicies, context.IncludeAcls, maxNumItems, null);
 
-                return ObjectFactory.ConvertChangeEvents(changeLogToken, objectList);
+                return ObjectFactory.ConvertChangeEvents(changeLogToken, ref nextLink, objectList);
             }
         }
 

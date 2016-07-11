@@ -392,6 +392,10 @@ namespace DotCMIS.Binding.AtomPub
                             Skip(reader);
                         }
                     }
+                    else if (AtomPubConstants.NamespaceApacheChemistry == reader.NamespaceURI)
+                    {
+                        feed.AddElement(ParseText(reader));
+                    }
                     else
                     {
                         Skip(reader);

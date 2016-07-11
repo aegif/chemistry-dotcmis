@@ -2808,7 +2808,7 @@ namespace DotCMIS.Binding.AtomPub
         }
     }
 
-    internal class ExtentedHolder
+    /*internal class ExtentedHolder
     {
         private Dictionary<String, Object> extraValues = new Dictionary<String, Object>();
 
@@ -2821,7 +2821,7 @@ namespace DotCMIS.Binding.AtomPub
         {
             return (String)extraValues[name];
         }
-    }
+    }*/
 
     internal class MultiFilingService : AbstractAtomPubService, IMultiFilingService
     {

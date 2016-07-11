@@ -330,7 +330,7 @@ namespace DotCMIS.Client
         ICmisObject ConvertObject(IObjectData objectData, IOperationContext context);
         IQueryResult ConvertQueryResult(IObjectData objectData);
         IChangeEvent ConvertChangeEvent(IObjectData objectData);
-        IChangeEvents ConvertChangeEvents(string changeLogToken, IObjectList objectList);
+        IChangeEvents ConvertChangeEvents(string changeLogToken, ref string nextLink, IObjectList objectList);
     }
 
     /// <summary>
