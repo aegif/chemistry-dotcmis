@@ -442,16 +442,29 @@ namespace DotCMIS.Binding.AtomPub
             // If Internal Server Error, output both request and response to the log for investigation.
             if (resp.StatusCode == HttpStatusCode.InternalServerError)
             {
-                StreamReader reader = new StreamReader(resp.Stream, Encoding.UTF8);
-                String responseString = reader.ReadToEnd();
                 Logger.Warn("----------------------------------------------------------------------");
                 Logger.Warn("Your CMIS server has returned: 500 Internal Server Error.");
-                Logger.Warn("This should never happen. It is a problem with your CMIS server.");
-                Logger.Warn("Please send this whole message (up to END) to your CMIS server support");
+                Logger.Warn("This should never happen. It is a problem with your server.");
+                Logger.Warn("Please send this whole message (up to END) to your server support");
                 Logger.Warn("GET request sent by CmisSync:");
                 Logger.Warn(url);
+
                 Logger.Warn("Response received by CmisSync:");
-                Logger.Warn(responseString);
+                Logger.Warn("Headers:");
+                foreach (KeyValuePair<string, string[]> header in resp.Headers)
+                {
+                    Logger.Warn("- " + header.Key + ": " + header.Value[0]);
+                }
+                Logger.Warn("Error content:");
+                Logger.Warn(resp.ErrorContent);
+                
+                if (resp.Stream != null)
+                {
+                    StreamReader reader = new StreamReader(resp.Stream, Encoding.UTF8);
+                    String responseString = reader.ReadToEnd();
+                    Logger.Warn(responseString);
+                }
+
                 Logger.Warn("--------------------------- END --------------------------------------");
             }
 
@@ -463,7 +476,8 @@ namespace DotCMIS.Binding.AtomPub
 
                 if (resp.StatusCode != HttpStatusCode.OK)
                 {
-
+                    Logger.Debug("GET REQUEST:" + url);
+                    Logger.Debug("GET RESPONSE:" + resp.ErrorContent);
                     throw ConvertToCmisException(resp);
                 }
             }
@@ -477,6 +491,8 @@ namespace DotCMIS.Binding.AtomPub
 
             if (resp.StatusCode != HttpStatusCode.Created)
             {
+                Logger.Debug("POST REQUEST:" + url);
+                Logger.Debug("POST RESPONSE:" + resp.ErrorContent);
                 throw ConvertToCmisException(resp);
             }
 
@@ -489,6 +505,8 @@ namespace DotCMIS.Binding.AtomPub
 
             if ((int)resp.StatusCode < 200 || (int)resp.StatusCode > 299)
             {
+                Logger.Debug("PUT REQUEST:" + url);
+                Logger.Debug("PUT RESPONSE:" + resp.ErrorContent);
                 throw ConvertToCmisException(resp);
             }
 
@@ -501,6 +519,8 @@ namespace DotCMIS.Binding.AtomPub
 
             if (resp.StatusCode != HttpStatusCode.NoContent)
             {
+                Logger.Debug("DELETE REQUEST:" + url);
+                Logger.Debug("DELETE RESPONSE:" + resp.ErrorContent);
                 throw ConvertToCmisException(resp);
             }
         }
