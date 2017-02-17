@@ -962,6 +962,20 @@ namespace DotCMIS.Client.Impl
             return new CollectionEnumerable<IRelationship>(new PageFetcher<IRelationship>(DefaultContext.MaxItemsPerPage, fetchPageDelegate));
         }
 
+        public IList<IRenditionData> GetRenditions(string repositoryId, string objectId, string renditionFilter,
+            long? maxItems, long? skipCount, DotCMIS.Data.Extensions.IExtensionsData extension)
+        {
+            if (objectId == null)
+            {
+                throw new ArgumentException("Invalid object id!");
+            }
+
+            IObjectService service = Binding.GetObjectService();
+            IOperationContext ctxt = new OperationContext(context);
+
+            return service.GetRenditions(repositoryId, objectId, renditionFilter, maxItems, skipCount, extension);
+        }
+
         // delete
         public void Delete(IObjectId objectId)
         {

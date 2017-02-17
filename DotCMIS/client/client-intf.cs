@@ -283,6 +283,9 @@ namespace DotCMIS.Client
         IItemEnumerable<IRelationship> GetRelationships(IObjectId objectId, bool includeSubRelationshipTypes,
                 RelationshipDirection? relationshipDirection, IObjectType type, IOperationContext context);
 
+        IList<IRenditionData> GetRenditions(string repositoryId, string objectId, string renditionFilter,
+            long? maxItems, long? skipCount, DotCMIS.Data.Extensions.IExtensionsData extension);
+
         // delete
         void Delete(IObjectId objectId);
         void Delete(IObjectId objectId, bool allVersions);
