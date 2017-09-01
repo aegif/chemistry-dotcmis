@@ -446,10 +446,11 @@ namespace DotCMIS.Binding.AtomPub
                 Logger.Warn("Your CMIS server has returned: 500 Internal Server Error.");
                 Logger.Warn("This should never happen. It is a problem with your server.");
                 Logger.Warn("Please send this whole message (up to END) to your server support");
-                Logger.Warn("GET request sent by CmisSync:");
+                
+                Logger.Warn("GET request sent to the server:");
                 Logger.Warn(url);
 
-                Logger.Warn("Response received by CmisSync:");
+                Logger.Warn("Response received from the server:");
                 Logger.Warn("Headers:");
                 foreach (KeyValuePair<string, string[]> header in resp.Headers)
                 {
@@ -457,7 +458,7 @@ namespace DotCMIS.Binding.AtomPub
                 }
                 Logger.Warn("Error content:");
                 Logger.Warn(resp.ErrorContent);
-                
+
                 if (resp.Stream != null)
                 {
                     StreamReader reader = new StreamReader(resp.Stream, Encoding.UTF8);
@@ -466,6 +467,7 @@ namespace DotCMIS.Binding.AtomPub
                 }
 
                 Logger.Warn("--------------------------- END --------------------------------------");
+                Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
             }
 
             if (resp.StatusCode != HttpStatusCode.OK)
@@ -478,6 +480,7 @@ namespace DotCMIS.Binding.AtomPub
                 {
                     Logger.Debug("GET REQUEST:" + url);
                     Logger.Debug("GET RESPONSE:" + resp.ErrorContent);
+                    Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                     throw ConvertToCmisException(resp);
                 }
             }
@@ -493,6 +496,7 @@ namespace DotCMIS.Binding.AtomPub
             {
                 Logger.Debug("POST REQUEST:" + url);
                 Logger.Debug("POST RESPONSE:" + resp.ErrorContent);
+                Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                 throw ConvertToCmisException(resp);
             }
 
@@ -507,6 +511,7 @@ namespace DotCMIS.Binding.AtomPub
             {
                 Logger.Debug("PUT REQUEST:" + url);
                 Logger.Debug("PUT RESPONSE:" + resp.ErrorContent);
+                Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                 throw ConvertToCmisException(resp);
             }
 
@@ -521,6 +526,7 @@ namespace DotCMIS.Binding.AtomPub
             {
                 Logger.Debug("DELETE REQUEST:" + url);
                 Logger.Debug("DELETE RESPONSE:" + resp.ErrorContent);
+                Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                 throw ConvertToCmisException(resp);
             }
         }
