@@ -30,6 +30,7 @@ using System.Runtime.Serialization;
 using DotCMIS.Enums;
 using DotCMIS.Exceptions;
 using DotCMIS.Util;
+using log4net;
 
 namespace DotCMIS.Binding
 {
@@ -81,6 +82,9 @@ namespace DotCMIS.Binding.Impl
 {
     internal static class HttpUtils
     {
+        // Log.
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(HttpUtils));
+
         public delegate void Output(Stream stream);
 
         public static Response InvokeGET(UrlBuilder url, BindingSession session)
@@ -154,7 +158,7 @@ namespace DotCMIS.Binding.Impl
                     {
                         conn.ReadWriteTimeout = readTimeout;
                     }
-
+                    
                     // set content type
                     if (contentType != null)
                     {
@@ -274,6 +278,7 @@ namespace DotCMIS.Binding.Impl
                     // connect
                     try
                     {
+                        Logger.Debug("Timeout=" + conn.Timeout + "ms ReadWriteTimeout=" + conn.ReadWriteTimeout + "ms");
                         HttpWebResponse response = (HttpWebResponse)conn.GetResponse();
 
                         if (authProvider != null)
@@ -289,6 +294,7 @@ namespace DotCMIS.Binding.Impl
                     {
                         if (method != "GET" || !ExceptionFixabilityDecider.CanExceptionBeFixedByRetry(we) || retry == 5) {
                             watch.Stop();
+                            Logger.Debug(method + " request failed: " + url);
                             Trace.WriteLineIf(DotCMISDebug.DotCMISSwitch.TraceInfo, string.Format("[{0}] received response after {1} ms", tag.ToString(), watch.ElapsedMilliseconds.ToString()));
                             return new Response(we);
                         }
@@ -407,7 +413,22 @@ namespace DotCMIS.Binding.Impl
 
             private void ExtractHeader() {
                 this.Headers = new Dictionary<string, string[]>();
-                for (int i = 0; i < this.response.Headers.Count; ++i) {
+
+                // Null checks
+                if (null == this.response)
+                {
+                    Logger.Error("response is null");
+                    return;
+                }
+                if (null == this.response.Headers)
+                {
+                    Logger.Error("response.Headers is null");
+                    return;
+                }
+
+                // Copy headers.
+                for (int i = 0; i < this.response.Headers.Count; ++i)
+                {
                     this.Headers.Add(this.response.Headers.GetKey(i), this.response.Headers.GetValues(i));
                 }
             }
