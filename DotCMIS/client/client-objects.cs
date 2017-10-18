@@ -172,7 +172,7 @@ namespace DotCMIS.Client.Impl
                     policies = new List<IPolicy>();
                     foreach (string pid in objectData.PolicyIds.PolicyIds)
                     {
-                        IPolicy policy = Session.GetObject(Session.CreateObjectId(pid)) as IPolicy;
+                        IPolicy policy = Session.GetObject(Session.CreateObjectId(pid), true) as IPolicy;
                         if (policy != null)
                         {
                             policies.Add(policy);
@@ -233,7 +233,7 @@ namespace DotCMIS.Client.Impl
 
             if (ObjectId != objectId.Id)
             {
-                return Session.GetObject(objectId, CreationContext);
+                return Session.GetObject(objectId, CreationContext, true);
             }
 
             return this;
@@ -507,7 +507,7 @@ namespace DotCMIS.Client.Impl
 
                 // get the latest data from the repository
                 IObjectData objectData = Binding.GetObjectService().GetObject(RepositoryId, ObjectId, oc.FilterString, oc.IncludeAllowableActions,
-                    oc.IncludeRelationships, oc.RenditionFilterString, oc.IncludePolicies, oc.IncludeAcls, null);
+                    oc.IncludeRelationships, oc.RenditionFilterString, oc.IncludePolicies, oc.IncludeAcls, null, true);
 
                 // reset this object
                 Initialize(Session, ObjectType, objectData, CreationContext);
@@ -552,7 +552,7 @@ namespace DotCMIS.Client.Impl
                 return null;
             }
 
-            IFileableCmisObject movedObject = Session.GetObject(Session.CreateObjectId(objectId)) as IFileableCmisObject;
+            IFileableCmisObject movedObject = Session.GetObject(Session.CreateObjectId(objectId), true) as IFileableCmisObject;
             if (movedObject == null)
             {
                 throw new CmisRuntimeException("Moved object is invalid!");
@@ -589,7 +589,7 @@ namespace DotCMIS.Client.Impl
 
                     // fetch the object and make sure it is a folder
                     IObjectId parentId = Session.CreateObjectId(idProperty.FirstValue as string);
-                    IFolder parentFolder = Session.GetObject(parentId) as IFolder;
+                    IFolder parentFolder = Session.GetObject(parentId, true) as IFolder;
                     if (parentFolder == null)
                     {
                         // the repository sent an object that is not a folder...
@@ -714,7 +714,7 @@ namespace DotCMIS.Client.Impl
                 return null;
             }
             // get the new object
-            IDocument newDoc = Session.GetObject(newId, context) as IDocument;
+            IDocument newDoc = Session.GetObject(newId, context, true) as IDocument;
             if (newDoc == null)
             {
                 throw new CmisRuntimeException("Newly created object is not a document! New id: " + newId);
@@ -889,7 +889,7 @@ namespace DotCMIS.Client.Impl
 
             if (ObjectId != objectId.Id)
             {
-                return (IDocument)Session.GetObject(objectId, CreationContext);
+                return (IDocument)Session.GetObject(objectId, CreationContext, true);
             }
 
             return this;
@@ -932,7 +932,7 @@ namespace DotCMIS.Client.Impl
 
             if (ObjectId != objectId.Id)
             {
-                return (IDocument)Session.GetObject(objectId, CreationContext);
+                return (IDocument)Session.GetObject(objectId, CreationContext, true);
             }
 
             return this;
@@ -975,7 +975,7 @@ namespace DotCMIS.Client.Impl
 
             if (ObjectId != objectId.Id)
             {
-                return (IDocument)Session.GetObject(objectId, CreationContext);
+                return (IDocument)Session.GetObject(objectId, CreationContext, true);
             }
 
             return this;
@@ -1036,7 +1036,7 @@ namespace DotCMIS.Client.Impl
             }
 
             // get the new object
-            IDocument newDoc = Session.GetObject(newId, context) as IDocument;
+            IDocument newDoc = Session.GetObject(newId, context, true) as IDocument;
             if (newDoc == null)
             {
                 throw new CmisRuntimeException("Newly created object is not a document! New id: " + newId);
@@ -1057,7 +1057,7 @@ namespace DotCMIS.Client.Impl
             }
 
             // get the new object
-            IDocument newDoc = Session.GetObject(newId, context) as IDocument;
+            IDocument newDoc = Session.GetObject(newId, context, true) as IDocument;
             if (newDoc == null)
             {
                 throw new CmisRuntimeException("Newly created object is not a document! New id: " + newId);
@@ -1077,7 +1077,7 @@ namespace DotCMIS.Client.Impl
             }
 
             // get the new object
-            IFolder newFolder = Session.GetObject(newId, context) as IFolder;
+            IFolder newFolder = Session.GetObject(newId, context, true) as IFolder;
             if (newFolder == null)
             {
                 throw new CmisRuntimeException("Newly created object is not a folder! New id: " + newId);
@@ -1097,7 +1097,7 @@ namespace DotCMIS.Client.Impl
             }
 
             // get the new object
-            IPolicy newPolicy = Session.GetObject(newId, context) as IPolicy;
+            IPolicy newPolicy = Session.GetObject(newId, context, true) as IPolicy;
             if (newPolicy == null)
             {
                 throw new CmisRuntimeException("Newly created object is not a policy! New id: " + newId);
@@ -1319,7 +1319,7 @@ namespace DotCMIS.Client.Impl
                     {
                         IObjectData objectData = Binding.GetObjectService().GetObject(RepositoryId, ObjectId,
                                 GetPropertyQueryName(PropertyIds.Path), false, IncludeRelationshipsFlag.None, "cmis:none", false,
-                                false, null);
+                                false, null, true);
 
                         if (objectData.Properties != null)
                         {
@@ -1424,7 +1424,7 @@ namespace DotCMIS.Client.Impl
                     return null;
                 }
 
-                return Session.GetObject(sourceId, context);
+                return Session.GetObject(sourceId, context, true);
             }
         }
 
@@ -1457,7 +1457,7 @@ namespace DotCMIS.Client.Impl
                     return null;
                 }
 
-                return Session.GetObject(targetId, context);
+                return Session.GetObject(targetId, context, true);
             }
         }
 
@@ -1591,7 +1591,7 @@ namespace DotCMIS.Client.Impl
                 return null;
             }
 
-            return session.GetObject(session.CreateObjectId(RenditionDocumentId), context) as IDocument;
+            return session.GetObject(session.CreateObjectId(RenditionDocumentId), context, true) as IDocument;
         }
 
         public IContentStream GetContentStream()

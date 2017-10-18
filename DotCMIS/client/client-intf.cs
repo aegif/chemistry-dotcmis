@@ -191,8 +191,8 @@ namespace DotCMIS.Client
         /// from the repository and puts it into the cache.
         /// </summary>
         /// <param name="objectId">the object ID</param>
-        ICmisObject GetObject(IObjectId objectId);
-        ICmisObject GetObject(IObjectId objectId, IOperationContext context);
+        ICmisObject GetObject(IObjectId objectId, bool outputErrors);
+        ICmisObject GetObject(IObjectId objectId, IOperationContext context, bool outputErrors);
 
         /// <summary>
         /// Gets a CMIS object from the session cache. If the object is not in the cache or the cache is 
@@ -200,8 +200,8 @@ namespace DotCMIS.Client
         /// from the repository and puts it into the cache.
         /// </summary>
         /// <param name="objectId">the object ID</param>
-        ICmisObject GetObject(string objectId);
-        ICmisObject GetObject(string objectId, IOperationContext context);
+        ICmisObject GetObject(string objectId, bool outputErrors);
+        ICmisObject GetObject(string objectId, IOperationContext context, bool outputErrors);
 
         /// <summary>
         /// Gets a CMIS object from the session cache. If the object is not in the cache or the cache is 

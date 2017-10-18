@@ -185,7 +185,7 @@ namespace DotCMIS.Binding.AtomPub
             string link = GetLink(repositoryId, id, rel, type);
             if (link == null)
             {
-                GetObjectInternal(repositoryId, IdentifierType.Id, id, ReturnVersion.This, null, null, null, null, null, null, null);
+                GetObjectInternal(repositoryId, IdentifierType.Id, id, ReturnVersion.This, null, null, null, null, null, null, null, true);
                 link = GetLink(repositoryId, id, rel, type);
             }
 
@@ -435,7 +435,7 @@ namespace DotCMIS.Binding.AtomPub
             return (T)parseResult;
         }
 
-        protected HttpUtils.Response Read(UrlBuilder url)
+        protected HttpUtils.Response Read(UrlBuilder url, bool outputErrors)
         {
             HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session);
 
@@ -476,7 +476,7 @@ namespace DotCMIS.Binding.AtomPub
                 string documentumWorkaroundUrl = url.ToString().Replace("cmis:path,", "");
                 resp = HttpUtils.InvokeGET(new UrlBuilder(documentumWorkaroundUrl), Session);
 
-                if (resp.StatusCode != HttpStatusCode.OK)
+                if (resp.StatusCode != HttpStatusCode.OK && outputErrors)
                 {
                     Logger.Debug("GET REQUEST:" + url);
                     Logger.Debug("GET RESPONSE:" + resp.ErrorContent);
@@ -738,7 +738,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamOnlyBasicPermissions, onlyBasicPermissions);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomAcl acl = Parse<AtomAcl>(resp.Stream);
 
             return Converter.Convert(acl.ACL, null);
@@ -780,7 +780,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamRepositoryId, repositoryId);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             ServiceDoc serviceDoc = Parse<ServiceDoc>(resp.Stream);
 
             // walk through the workspaces
@@ -818,7 +818,7 @@ namespace DotCMIS.Binding.AtomPub
 
         protected IObjectData GetObjectInternal(string repositoryId, IdentifierType idOrPath, string objectIdOrPath,
             ReturnVersion? returnVersion, string filter, bool? includeAllowableActions, IncludeRelationshipsFlag? includeRelationships,
-            string renditionFilter, bool? includePolicyIds, bool? includeAcl, IExtensionsData extension)
+            string renditionFilter, bool? includePolicyIds, bool? includeAcl, IExtensionsData extension, bool outputErrors)
         {
             IObjectData result = null;
 
@@ -851,7 +851,7 @@ namespace DotCMIS.Binding.AtomPub
                 url.AddParameter(Parameters.ParamReturnVersion, returnVersion);
             }
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, outputErrors);
             AtomEntry entry = Parse<AtomEntry>(resp.Stream);
 
             if (entry.Id == null)
@@ -893,7 +893,7 @@ namespace DotCMIS.Binding.AtomPub
             }
 
             // read and parse
-            HttpUtils.Response resp = Read(new UrlBuilder(link));
+            HttpUtils.Response resp = Read(new UrlBuilder(link), true);
             AtomEntry entry = Parse<AtomEntry>(resp.Stream);
 
             // we expect a CMIS entry
@@ -978,7 +978,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // handle top level
@@ -1051,7 +1051,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamPropertyDefinitions, includePropertyDefinitions);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // process tree
@@ -1139,7 +1139,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // handle top level
@@ -1223,7 +1223,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamPathSegment, includePathSegment);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // process tree
@@ -1255,7 +1255,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamPathSegment, includePathSegment);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // process tree
@@ -1287,7 +1287,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamRelativePathSegment, includeRelativePathSegment);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomBase atomBase = Parse<AtomBase>(resp.Stream);
 
             if (atomBase is AtomFeed)
@@ -1375,7 +1375,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamFilter, filter);
 
             // read
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomBase atomBase = Parse<AtomBase>(resp.Stream);
 
             // get the entry
@@ -1445,7 +1445,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // handle top level
@@ -1812,7 +1812,7 @@ namespace DotCMIS.Binding.AtomPub
             UrlBuilder url = new UrlBuilder(link);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomAllowableActions allowableActions = Parse<AtomAllowableActions>(resp.Stream);
 
             return Converter.Convert(allowableActions.AllowableActions);
@@ -1821,7 +1821,7 @@ namespace DotCMIS.Binding.AtomPub
         public IProperties GetProperties(string repositoryId, string objectId, string filter, IExtensionsData extension)
         {
             IObjectData obj = GetObjectInternal(repositoryId, IdentifierType.Id, objectId, ReturnVersion.This, filter,
-                    false, IncludeRelationshipsFlag.None, "cmis:none", false, false, extension);
+                    false, IncludeRelationshipsFlag.None, "cmis:none", false, false, extension, true);
 
             return obj.Properties;
         }
@@ -1830,7 +1830,7 @@ namespace DotCMIS.Binding.AtomPub
             long? maxItems, long? skipCount, IExtensionsData extension)
         {
             IObjectData obj = GetObjectInternal(repositoryId, IdentifierType.Id, objectId, ReturnVersion.This,
-                PropertyIds.ObjectId, false, IncludeRelationshipsFlag.None, renditionFilter, false, false, extension);
+                PropertyIds.ObjectId, false, IncludeRelationshipsFlag.None, renditionFilter, false, false, extension, true);
 
             IList<IRenditionData> result = obj.Renditions;
             if (result == null)
@@ -1843,10 +1843,10 @@ namespace DotCMIS.Binding.AtomPub
 
         public IObjectData GetObject(string repositoryId, string objectId, string filter, bool? includeAllowableActions,
             IncludeRelationshipsFlag? includeRelationships, string renditionFilter, bool? includePolicyIds,
-            bool? includeAcl, IExtensionsData extension)
+            bool? includeAcl, IExtensionsData extension, bool outputErrors)
         {
             return GetObjectInternal(repositoryId, IdentifierType.Id, objectId, ReturnVersion.This, filter, includeAllowableActions,
-                includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension);
+                includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension, outputErrors);
         }
 
         public IObjectData GetObjectByPath(string repositoryId, string path, string filter, bool? includeAllowableActions,
@@ -1854,7 +1854,7 @@ namespace DotCMIS.Binding.AtomPub
             IExtensionsData extension)
         {
             return GetObjectInternal(repositoryId, IdentifierType.Path, path, ReturnVersion.This, filter, includeAllowableActions,
-                includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension);
+                includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension, true);
         }
 
         public IContentStream GetContentStream(string repositoryId, string objectId, string streamId, long? offset, long? length,
@@ -2103,7 +2103,7 @@ namespace DotCMIS.Binding.AtomPub
                     url.AddParameter(Parameters.ParamSkipCount, 0);
 
                     // read and parse
-                    resp = Read(url);
+                    resp = Read(url, true);
                     AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
                     // prepare result
@@ -2498,7 +2498,7 @@ namespace DotCMIS.Binding.AtomPub
             }
 
             return GetObjectInternal(repositoryId, IdentifierType.Id, objectId, returnVersion, filter,
-                    includeAllowableActions, includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension);
+                    includeAllowableActions, includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension, true);
         }
 
         public IProperties GetPropertiesOfLatestVersion(string repositoryId, string objectId, string versionSeriesId, bool major,
@@ -2511,7 +2511,7 @@ namespace DotCMIS.Binding.AtomPub
             }
 
             IObjectData objectData = GetObjectInternal(repositoryId, IdentifierType.Id, objectId, returnVersion, filter,
-                    false, IncludeRelationshipsFlag.None, "cmis:none", false, false, extension);
+                    false, IncludeRelationshipsFlag.None, "cmis:none", false, false, extension, true);
 
             return objectData.Properties;
         }
@@ -2534,7 +2534,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamAllowableActions, includeAllowableActions);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // get the versions
@@ -2605,7 +2605,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // handle top level
@@ -2760,7 +2760,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamMaxItems, maxItems);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
             String lastChangeLogToken = null;
 
@@ -2965,7 +2965,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamFilter, PropertyIds.ObjectId);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // find the policy
@@ -3027,7 +3027,7 @@ namespace DotCMIS.Binding.AtomPub
             url.AddParameter(Parameters.ParamFilter, filter);
 
             // read and parse
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             AtomFeed feed = Parse<AtomFeed>(resp.Stream);
 
             // get the policies

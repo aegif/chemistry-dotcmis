@@ -431,7 +431,7 @@ namespace DotCMIS.Client.Impl
 
         public IFolder GetRootFolder(IOperationContext context)
         {
-            IFolder rootFolder = GetObject(CreateObjectId(RepositoryInfo.RootFolderId), context) as IFolder;
+            IFolder rootFolder = GetObject(CreateObjectId(RepositoryInfo.RootFolderId), context, true) as IFolder;
             if (rootFolder == null)
             {
                 throw new CmisRuntimeException("Root folder object is not a folder!");
@@ -479,27 +479,27 @@ namespace DotCMIS.Client.Impl
             return new CollectionEnumerable<IDocument>(new PageFetcher<IDocument>(DefaultContext.MaxItemsPerPage, fetchPageDelegate));
         }
 
-        public ICmisObject GetObject(IObjectId objectId)
+        public ICmisObject GetObject(IObjectId objectId, bool outputErrors)
         {
-            return GetObject(objectId, DefaultContext);
+            return GetObject(objectId, DefaultContext, outputErrors);
         }
 
-        public ICmisObject GetObject(IObjectId objectId, IOperationContext context)
+        public ICmisObject GetObject(IObjectId objectId, IOperationContext context, bool outputErrors)
         {
             if (objectId == null || objectId.Id == null)
             {
                 throw new ArgumentException("Object Id must be set!");
             }
 
-            return GetObject(objectId.Id, context);
+            return GetObject(objectId.Id, context, outputErrors);
         }
 
-        public ICmisObject GetObject(string objectId)
+        public ICmisObject GetObject(string objectId, bool outputErrors)
         {
-            return GetObject(objectId, DefaultContext);
+            return GetObject(objectId, DefaultContext, outputErrors);
         }
 
-        public ICmisObject GetObject(string objectId, IOperationContext context)
+        public ICmisObject GetObject(string objectId, IOperationContext context, bool outputErrors)
         {
             if (objectId == null)
             {
@@ -525,7 +525,7 @@ namespace DotCMIS.Client.Impl
             // get the object
             IObjectData objectData = Binding.GetObjectService().GetObject(RepositoryId, objectId, context.FilterString,
                 context.IncludeAllowableActions, context.IncludeRelationships, context.RenditionFilterString, context.IncludePolicies,
-                context.IncludeAcls, null);
+                context.IncludeAcls, null, outputErrors);
 
             result = ObjectFactory.ConvertObject(objectData, context);
 
@@ -657,7 +657,7 @@ namespace DotCMIS.Client.Impl
                     // get the document to find the version series ID
                     IObjectData sourceObjectData = Binding.GetObjectService().GetObject(RepositoryId, objectId.Id,
                             PropertyIds.ObjectId + "," + PropertyIds.VersionSeriesId, false, IncludeRelationshipsFlag.None,
-                            "cmis:none", false, false, null);
+                            "cmis:none", false, false, null, true);
 
                     if (sourceObjectData.Properties != null)
                     {
@@ -812,7 +812,7 @@ namespace DotCMIS.Client.Impl
             }
             else
             {
-                ICmisObject sourceObj = GetObject(source);
+                ICmisObject sourceObj = GetObject(source, true);
                 type = sourceObj.ObjectType;
                 secondaryTypes = sourceObj.SecondaryTypes;
             }
@@ -946,7 +946,7 @@ namespace DotCMIS.Client.Impl
                 {
                     foreach (IObjectData rod in relList.Objects)
                     {
-                        IRelationship relationship = GetObject(CreateObjectId(rod.Id), ctxt) as IRelationship;
+                        IRelationship relationship = GetObject(CreateObjectId(rod.Id), ctxt, true) as IRelationship;
                         if (relationship == null)
                         {
                             throw new CmisRuntimeException("Repository returned an object that is not a relationship!");

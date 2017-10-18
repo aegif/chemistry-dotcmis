@@ -918,7 +918,7 @@ namespace DotCMIS.Binding.Browser
 
         public IObjectData GetObject(string repositoryId, string objectId, string filter, bool? includeAllowableActions,
             IncludeRelationshipsFlag? includeRelationships, string renditionFilter, bool? includePolicyIds, bool? includeAcl,
-            IExtensionsData extension)
+            IExtensionsData extension, bool outputErrors)
         {
             UrlBuilder url = GetObjectUrl(repositoryId, objectId, BrowserConstants.SelectorObject);
             url.AddParameter(Parameters.ParamFilter, filter);

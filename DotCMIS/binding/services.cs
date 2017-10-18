@@ -92,7 +92,7 @@ namespace DotCMIS.Binding.Services
 
         IObjectData GetObject(string repositoryId, string objectId, string filter, bool? includeAllowableActions,
             IncludeRelationshipsFlag? includeRelationships, string renditionFilter, bool? includePolicyIds,
-            bool? includeAcl, IExtensionsData extension);
+            bool? includeAcl, IExtensionsData extension, bool outputErrors);
 
         IObjectData GetObjectByPath(string repositoryId, string path, string filter, bool? includeAllowableActions,
             IncludeRelationshipsFlag? includeRelationships, string renditionFilter, bool? includePolicyIds, bool? includeAcl,
