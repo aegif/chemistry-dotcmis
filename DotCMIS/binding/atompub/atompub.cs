@@ -1851,7 +1851,7 @@ namespace DotCMIS.Binding.AtomPub
 
         public IObjectData GetObjectByPath(string repositoryId, string path, string filter, bool? includeAllowableActions,
             IncludeRelationshipsFlag? includeRelationships, string renditionFilter, bool? includePolicyIds, bool? includeAcl,
-            IExtensionsData extension)
+            IExtensionsData extension, bool outputErrors)
         {
             return GetObjectInternal(repositoryId, IdentifierType.Path, path, ReturnVersion.This, filter, includeAllowableActions,
                 includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension, true);

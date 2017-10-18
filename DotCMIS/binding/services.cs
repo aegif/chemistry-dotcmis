@@ -96,7 +96,7 @@ namespace DotCMIS.Binding.Services
 
         IObjectData GetObjectByPath(string repositoryId, string path, string filter, bool? includeAllowableActions,
             IncludeRelationshipsFlag? includeRelationships, string renditionFilter, bool? includePolicyIds, bool? includeAcl,
-            IExtensionsData extension);
+            IExtensionsData extension, bool outputErrors);
 
         IContentStream GetContentStream(string repositoryId, string objectId, string streamId, long? offset, long? length,
             IExtensionsData extension);

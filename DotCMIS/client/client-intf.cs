@@ -209,8 +209,8 @@ namespace DotCMIS.Client
         /// from the repository and puts it into the cache.
         /// </summary>
         /// <param name="path">the path to the object</param>
-        ICmisObject GetObjectByPath(string path);
-        ICmisObject GetObjectByPath(string path, IOperationContext context);
+        ICmisObject GetObjectByPath(string path, bool outputErrors);
+        ICmisObject GetObjectByPath(string path, IOperationContext context, bool outputErrors);
 
         /// <summary>
         /// Gets the latest version in a version series.

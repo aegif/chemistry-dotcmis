@@ -538,12 +538,12 @@ namespace DotCMIS.Client.Impl
             return result;
         }
 
-        public ICmisObject GetObjectByPath(string path)
+        public ICmisObject GetObjectByPath(string path, bool outputErrors)
         {
-            return GetObjectByPath(path, DefaultContext);
+            return GetObjectByPath(path, DefaultContext, outputErrors);
         }
 
-        public ICmisObject GetObjectByPath(string path, IOperationContext context)
+        public ICmisObject GetObjectByPath(string path, IOperationContext context, bool outputErrors)
         {
             if (path == null)
             {
@@ -569,7 +569,7 @@ namespace DotCMIS.Client.Impl
             // get the object
             IObjectData objectData = Binding.GetObjectService().GetObjectByPath(RepositoryId, path, context.FilterString,
                 context.IncludeAllowableActions, context.IncludeRelationships, context.RenditionFilterString, context.IncludePolicies,
-                context.IncludeAcls, null);
+                context.IncludeAcls, null, outputErrors);
 
             result = ObjectFactory.ConvertObject(objectData, context);
 

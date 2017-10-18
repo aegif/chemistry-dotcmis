@@ -968,7 +968,7 @@ namespace DotCMIS.Binding.WebServices
 
         public IObjectData GetObjectByPath(string repositoryId, string path, string filter, bool? includeAllowableActions,
             IncludeRelationshipsFlag? includeRelationships, string renditionFilter, bool? includePolicyIds, bool? includeAcl,
-            IExtensionsData extension)
+            IExtensionsData extension, bool outputErrors)
         {
             ObjectServicePortClient port = Provider.GetObjectService();
 
