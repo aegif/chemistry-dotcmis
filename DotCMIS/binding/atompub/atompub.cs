@@ -437,7 +437,7 @@ namespace DotCMIS.Binding.AtomPub
 
         protected HttpUtils.Response Read(UrlBuilder url, bool outputErrors)
         {
-            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session);
+            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session, outputErrors);
 
             // If Internal Server Error, output both request and response to the log for investigation.
             if (resp.StatusCode == HttpStatusCode.InternalServerError)
@@ -474,7 +474,7 @@ namespace DotCMIS.Binding.AtomPub
             {
                 // Workaround for Documentum, see https://github.com/aegif/CmisSync/issues/607
                 string documentumWorkaroundUrl = url.ToString().Replace("cmis:path,", "");
-                resp = HttpUtils.InvokeGET(new UrlBuilder(documentumWorkaroundUrl), Session);
+                resp = HttpUtils.InvokeGET(new UrlBuilder(documentumWorkaroundUrl), Session, outputErrors);
 
                 if (resp.StatusCode != HttpStatusCode.OK && outputErrors)
                 {
@@ -852,6 +852,11 @@ namespace DotCMIS.Binding.AtomPub
             }
 
             HttpUtils.Response resp = Read(url, outputErrors);
+            if (HttpStatusCode.NotFound.Equals(resp.StatusCode)
+                || null == resp.Stream) // Happens with Alfresco 
+            {
+                throw new CmisObjectNotFoundException("Not found on server");
+            }
             AtomEntry entry = Parse<AtomEntry>(resp.Stream);
 
             if (entry.Id == null)
@@ -1854,7 +1859,7 @@ namespace DotCMIS.Binding.AtomPub
             IExtensionsData extension, bool outputErrors)
         {
             return GetObjectInternal(repositoryId, IdentifierType.Path, path, ReturnVersion.This, filter, includeAllowableActions,
-                includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension, true);
+                includeRelationships, renditionFilter, includePolicyIds, includeAcl, extension, outputErrors);
         }
 
         public IContentStream GetContentStream(string repositoryId, string objectId, string streamId, long? offset, long? length,
@@ -1882,7 +1887,7 @@ namespace DotCMIS.Binding.AtomPub
             {
                 throw new CmisInvalidArgumentException("Length >" + Int64.MaxValue.ToString());
             }
-            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session, offset, length);
+            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session, offset, length, true);
 
             // check response code
             if (resp.StatusCode != HttpStatusCode.OK && resp.StatusCode != HttpStatusCode.PartialContent)

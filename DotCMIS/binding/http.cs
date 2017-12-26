@@ -87,33 +87,33 @@ namespace DotCMIS.Binding.Impl
 
         public delegate void Output(Stream stream);
 
-        public static Response InvokeGET(UrlBuilder url, BindingSession session)
+        public static Response InvokeGET(UrlBuilder url, BindingSession session, bool outputErrors)
         {
-            return Invoke(url, "GET", null, null, session, null, null, null);
+            return Invoke(url, "GET", null, null, session, null, null, null, outputErrors);
         }
 
-        public static Response InvokeGET(UrlBuilder url, BindingSession session, long? offset, long? length)
+        public static Response InvokeGET(UrlBuilder url, BindingSession session, long? offset, long? length, bool outputErrors)
         {
-            return Invoke(url, "GET", null, null, session, offset, length, null);
+            return Invoke(url, "GET", null, null, session, offset, length, null, outputErrors);
         }
 
         public static Response InvokePOST(UrlBuilder url, String contentType, Output writer, BindingSession session)
         {
-            return Invoke(url, "POST", contentType, writer, session, null, null, null);
+            return Invoke(url, "POST", contentType, writer, session, null, null, null, true);
         }
 
         public static Response InvokePUT(UrlBuilder url, String contentType, IDictionary<string, string> headers, Output writer, BindingSession session)
         {
-            return Invoke(url, "PUT", contentType, writer, session, null, null, headers);
+            return Invoke(url, "PUT", contentType, writer, session, null, null, headers, true);
         }
 
         public static Response InvokeDELETE(UrlBuilder url, BindingSession session)
         {
-            return Invoke(url, "DELETE", null, null, session, null, null, null);
+            return Invoke(url, "DELETE", null, null, session, null, null, null, true);
         }
 
         private static Response Invoke(UrlBuilder url, String method, String contentType, Output writer, BindingSession session,
-                long? offset, long? length, IDictionary<string, string> headers)
+                long? offset, long? length, IDictionary<string, string> headers, bool outputErrors)
         {
             Guid tag = Guid.NewGuid();
             string request = method + " " + url;
@@ -294,7 +294,10 @@ namespace DotCMIS.Binding.Impl
                     {
                         if (method != "GET" || !ExceptionFixabilityDecider.CanExceptionBeFixedByRetry(we) || retry == 5) {
                             watch.Stop();
-                            Logger.Debug(method + " request failed: " + url);
+                            if (outputErrors)
+                            {
+                                Logger.Debug(method + " request failed: " + url);
+                            }
                             Trace.WriteLineIf(DotCMISDebug.DotCMISSwitch.TraceInfo, string.Format("[{0}] received response after {1} ms", tag.ToString(), watch.ElapsedMilliseconds.ToString()));
                             return new Response(we);
                         }

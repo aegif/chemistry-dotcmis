@@ -334,9 +334,9 @@ namespace DotCMIS.Binding.Browser
             }
         }
 
-        protected HttpUtils.Response Read(UrlBuilder url)
+        protected HttpUtils.Response Read(UrlBuilder url, bool outputErrors)
         {
-            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session);
+            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session, outputErrors);
 
             if (resp.StatusCode != HttpStatusCode.OK)
             {
@@ -439,7 +439,7 @@ namespace DotCMIS.Binding.Browser
                 url = new UrlBuilder(GetServiceUrl());
             }
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
 
             JObject json = ParseObject(resp.Stream);
             foreach (JToken repo in json.PropertyValues())
@@ -501,7 +501,7 @@ namespace DotCMIS.Binding.Browser
         {
             UrlBuilder url = GetRepositoryUrl(repositoryId,BrowserConstants.SelectorTypeDefinition);
             url.AddParameter(Parameters.ParamTypeId, typeId);
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             return BrowserConverter.ConvertTypeDefinition(json);
         }
@@ -577,7 +577,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamDepth,depth);
             url.AddParameter(Parameters.ParamPropertyDefinitions, includePropertyDefinitions);
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JArray json = ParseArray(resp.Stream);
             return BrowserConverter.ConvertTypeDescendants(json);
         }
@@ -592,7 +592,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamMaxItems, maxItems);
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             return BrowserConverter.ConvertTypeChildren(json);
         }
@@ -620,7 +620,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectInFolderList(json, typeCache);
@@ -639,7 +639,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamPathSegment, includePathSegment);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JArray json = ParseArray(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertDescendants(json, typeCache);
@@ -658,7 +658,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamPathSegment, includePathSegment);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JArray json = ParseArray(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertDescendants(json, typeCache);
@@ -676,7 +676,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamRelativePathSegment, includeRelativePathSegment);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JArray json = ParseArray(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectParents(json, typeCache);
@@ -696,7 +696,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectList(json, typeCache, false);
@@ -708,7 +708,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamFilter, filter);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectData(json, typeCache);
@@ -879,7 +879,7 @@ namespace DotCMIS.Binding.Browser
         {
             UrlBuilder url = GetObjectUrl(repositoryId, objectId, BrowserConstants.SelectorAllowableActions);
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             return BrowserConverter.ConvertAllowableActions(json);
         }
@@ -890,7 +890,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamFilter, filter);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             if (Succinct)
@@ -911,7 +911,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamMaxItems, maxItems);
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JArray json = ParseArray(resp.Stream);
             return BrowserConverter.ConvertRenditions(json);
         }
@@ -929,7 +929,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamACL, includeAcl);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, outputErrors);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectData(json, typeCache);
@@ -948,7 +948,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamACL, includeAcl);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, outputErrors);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectData(json,typeCache);
@@ -960,7 +960,7 @@ namespace DotCMIS.Binding.Browser
             UrlBuilder url = GetObjectUrl(repositoryId, objectId, BrowserConstants.SelectorContent);
             url.AddParameter(Parameters.ParamStreamId, streamId);
 
-            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session, offset, length);
+            HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session, offset, length, true);
             if (resp.StatusCode != HttpStatusCode.OK && resp.StatusCode != HttpStatusCode.PartialContent)
             {
                 throw ConvertStatusCode(resp.StatusCode, resp.Message, resp.ErrorContent, null);
@@ -1293,7 +1293,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamReturnVersion, major ? ReturnVersion.LatestMajor : ReturnVersion.Latest);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectData(json, typeCache);
@@ -1307,7 +1307,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamReturnVersion, major ? ReturnVersion.LatestMajor : ReturnVersion.Latest);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             if (Succinct)
@@ -1328,7 +1328,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamAllowableActions, includeAllowableActions);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JArray json = ParseArray(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjects(json, typeCache);
@@ -1356,7 +1356,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamSkipCount, skipCount);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjectList(json, typeCache, false);
@@ -1409,7 +1409,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamMaxItems, maxItems);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             if (changeLogToken != null)
             {
@@ -1473,7 +1473,7 @@ namespace DotCMIS.Binding.Browser
             UrlBuilder url = GetObjectUrl(repositoryId, objectId, BrowserConstants.SelectorAcl);
             url.AddParameter(Parameters.ParamOnlyBasicPermissions, onlyBasicPermissions);
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JObject json = ParseObject(resp.Stream);
             return BrowserConverter.ConvertAcl(json);
         }
@@ -1546,7 +1546,7 @@ namespace DotCMIS.Binding.Browser
             url.AddParameter(Parameters.ParamFilter, filter);
             url.AddParameter(Parameters.ParamSuccinct, GetSuccinctParameter());
 
-            HttpUtils.Response resp = Read(url);
+            HttpUtils.Response resp = Read(url, true);
             JArray json = ParseArray(resp.Stream);
             ClientTypeCache typeCache = new ClientTypeCache(repositoryId, this);
             return BrowserConverter.ConvertObjects(json, typeCache);
