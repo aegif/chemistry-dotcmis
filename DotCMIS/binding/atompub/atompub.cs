@@ -479,7 +479,8 @@ namespace DotCMIS.Binding.AtomPub
                 if (resp.StatusCode != HttpStatusCode.OK && outputErrors)
                 {
                     Logger.Debug("GET REQUEST:" + url);
-                    Logger.Debug("GET RESPONSE:" + resp.ErrorContent);
+                    Logger.Debug("GET RESPONSE STATUS:" + resp.StatusCode);
+                    Logger.Debug("GET RESPONSE CONTENT:" + resp.ErrorContent);
                     Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                     throw ConvertToCmisException(resp);
                 }
@@ -495,7 +496,8 @@ namespace DotCMIS.Binding.AtomPub
             if (resp.StatusCode != HttpStatusCode.Created)
             {
                 Logger.Debug("POST REQUEST:" + url);
-                Logger.Debug("POST RESPONSE:" + resp.ErrorContent);
+                Logger.Debug("POST RESPONSE CODE:" + resp.StatusCode);
+                Logger.Debug("POST RESPONSE CONTENT:" + resp.ErrorContent);
                 Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                 throw ConvertToCmisException(resp);
             }
@@ -510,7 +512,8 @@ namespace DotCMIS.Binding.AtomPub
             if ((int)resp.StatusCode < 200 || (int)resp.StatusCode > 299)
             {
                 Logger.Debug("PUT REQUEST:" + url);
-                Logger.Debug("PUT RESPONSE:" + resp.ErrorContent);
+                Logger.Debug("PUT RESPONSE STATUS:" + resp.StatusCode);
+                Logger.Debug("PUT RESPONSE CONTENT:" + resp.ErrorContent);
                 Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                 throw ConvertToCmisException(resp);
             }
@@ -525,7 +528,8 @@ namespace DotCMIS.Binding.AtomPub
             if (resp.StatusCode != HttpStatusCode.NoContent)
             {
                 Logger.Debug("DELETE REQUEST:" + url);
-                Logger.Debug("DELETE RESPONSE:" + resp.ErrorContent);
+                Logger.Debug("DELETE RESPONSE CODE:" + resp.StatusCode);
+                Logger.Debug("DELETE RESPONSE CONTENT:" + resp.ErrorContent);
                 Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
                 throw ConvertToCmisException(resp);
             }
