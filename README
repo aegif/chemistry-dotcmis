@@ -13,6 +13,15 @@ This release is a bug fix release.
 If you find a problem, please let us know: https://issues.apache.org/jira/browse/CMIS
 
 
+Building on Ubuntu 2018.04
+--------------------------
+
+sudo apt install mono-xbuild
+cd DotCMIS
+xbuild DotCMIS.csproj
+
+The resulting DLL is in bin/Debug
+
 Change log 
 ----------
 
