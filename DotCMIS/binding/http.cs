@@ -298,10 +298,22 @@ namespace DotCMIS.Binding.Impl
                             watch.Stop();
                             if (outputErrors)
                             {
-                                Logger.Debug(method + " request failed: " + url);
+                                Logger.Debug(method + " request failed: " + url + " " + we.Message + " " + we.Status);
                             }
                             Trace.WriteLineIf(DotCMISDebug.DotCMISSwitch.TraceInfo, string.Format("[{0}] received response after {1} ms", tag.ToString(), watch.ElapsedMilliseconds.ToString()));
-                            return new Response(we);
+
+                            if (we.Status.Equals(WebExceptionStatus.ConnectFailure))
+                            {
+                                Logger.Error("Your CMIS server is unreachable. Please check the server and network/firewalls. "
+                                    + " How to test the connection: On the same computer as CmisSync, launch Firefox at "
+                                    + url + " and enter your username/password. If the connection is successful an Atom XML file gets downloaded, "
+                                    + "if not please repair your server or network.");
+                                return null;
+                            }
+                            else
+                            {
+                                return new Response(we);
+                            }
                         }
 
                         retry++;

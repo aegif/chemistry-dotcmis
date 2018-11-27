@@ -440,7 +440,7 @@ namespace DotCMIS.Binding.AtomPub
             HttpUtils.Response resp = HttpUtils.InvokeGET(url, Session, outputErrors);
 
             // If Internal Server Error, output both request and response to the log for investigation.
-            if (resp.StatusCode == HttpStatusCode.InternalServerError)
+            if (resp != null && resp.StatusCode == HttpStatusCode.InternalServerError)
             {
                 Logger.Warn("----------------------------------------------------------------------");
                 Logger.Warn("Your CMIS server has returned: 500 Internal Server Error.");
@@ -470,7 +470,7 @@ namespace DotCMIS.Binding.AtomPub
                 Logger.Debug("Local CmisSync call stack, for information purposes:" + System.Environment.StackTrace);
             }
 
-            if (resp.StatusCode != HttpStatusCode.OK)
+            if (resp != null && resp.StatusCode != HttpStatusCode.OK)
             {
                 // Workaround for Documentum, see https://github.com/aegif/CmisSync/issues/607
                 string documentumWorkaroundUrl = url.ToString().Replace("cmis:path,", "");
@@ -785,34 +785,37 @@ namespace DotCMIS.Binding.AtomPub
 
             // read and parse
             HttpUtils.Response resp = Read(url, true);
-            ServiceDoc serviceDoc = Parse<ServiceDoc>(resp.Stream);
-
-            // walk through the workspaces
-            foreach (RepositoryWorkspace ws in serviceDoc.GetWorkspaces())
+            if (resp != null)
             {
-                if (ws.Id == null)
-                {
-                    // found a non-CMIS workspace
-                    continue;
-                }
+                ServiceDoc serviceDoc = Parse<ServiceDoc>(resp.Stream);
 
-                foreach (AtomElement element in ws.GetElements())
+                // walk through the workspaces
+                foreach (RepositoryWorkspace ws in serviceDoc.GetWorkspaces())
                 {
-                    if (element.LocalName == NameCollection)
+                    if (ws.Id == null)
                     {
-                        AddCollection(ws.Id, (IDictionary<string, string>)element.Object);
+                        // found a non-CMIS workspace
+                        continue;
                     }
-                    else if (element.Object is AtomLink)
+
+                    foreach (AtomElement element in ws.GetElements())
                     {
-                        AddRepositoryLink(ws.Id, (AtomLink)element.Object);
-                    }
-                    else if (element.LocalName == NameURITemplate)
-                    {
-                        AddTemplate(ws.Id, (IDictionary<string, string>)element.Object);
-                    }
-                    else if (element.Object is cmisRepositoryInfoType)
-                    {
-                        repInfos.Add(Converter.Convert((cmisRepositoryInfoType)element.Object));
+                        if (element.LocalName == NameCollection)
+                        {
+                            AddCollection(ws.Id, (IDictionary<string, string>)element.Object);
+                        }
+                        else if (element.Object is AtomLink)
+                        {
+                            AddRepositoryLink(ws.Id, (AtomLink)element.Object);
+                        }
+                        else if (element.LocalName == NameURITemplate)
+                        {
+                            AddTemplate(ws.Id, (IDictionary<string, string>)element.Object);
+                        }
+                        else if (element.Object is cmisRepositoryInfoType)
+                        {
+                            repInfos.Add(Converter.Convert((cmisRepositoryInfoType)element.Object));
+                        }
                     }
                 }
             }
