@@ -278,8 +278,9 @@ namespace DotCMIS.Binding.Impl
                     // connect
                     try
                     {
-                        Logger.Debug("Timeout=" + conn.Timeout + "ms ReadWriteTimeout=" + conn.ReadWriteTimeout + "ms");
+                        Logger.Debug("About to call conn.GetResponse() with HttpWebRequest.Timeout=" + conn.Timeout + "ms and HttpWebRequest.ReadWriteTimeout=" + conn.ReadWriteTimeout + "ms");
                         HttpWebResponse response = (HttpWebResponse)conn.GetResponse();
+                        Logger.Debug("conn.GetResponse() result: " + response);
 
                         if (authProvider != null)
                         {
@@ -292,6 +293,7 @@ namespace DotCMIS.Binding.Impl
                     }
                     catch (WebException we)
                     {
+                        Logger.Debug("conn.GetResponse() triggered exception: " + we);
                         if (method != "GET" || !ExceptionFixabilityDecider.CanExceptionBeFixedByRetry(we) || retry == 5) {
                             watch.Stop();
                             if (outputErrors)

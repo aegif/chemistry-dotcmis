@@ -1570,6 +1570,9 @@ namespace DotCMIS.Binding.AtomPub
 
     internal class ObjectService : AbstractAtomPubService, IObjectService
     {
+        // Log.
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ObjectService));
+
         public ObjectService(BindingSession session)
         {
             Session = session;
@@ -1876,6 +1879,7 @@ namespace DotCMIS.Binding.AtomPub
 
             // find the link
             string link = LoadLink(repositoryId, objectId, AtomPubConstants.LinkRelContent, null);
+            Logger.Debug("Link: " + link);
 
             if (link == null)
             {
